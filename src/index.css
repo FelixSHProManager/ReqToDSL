@@ -18,9 +18,20 @@ body {
   box-sizing: border-box;
 }
 
+/* Checkbox styles (from DMPQueryAssistant) */
+input[type="checkbox"] {
+  accent-color: #1E6FF2;
+}
+
 @layer utilities {
   .animate-fadeIn {
     animation: fadeIn 250ms ease-in;
+  }
+  .animate-scaleIn {
+    animation: scaleIn 0.5s ease-out;
+  }
+  .animate-checkmark {
+    animation: checkmark 0.6s ease-out 0.2s both;
   }
 }
 
@@ -57,15 +68,5 @@ body {
   100% {
     opacity: 1;
     transform: scale(1) rotate(0deg);
-  }
-}
-
-@layer utilities {
-  .animate-scaleIn {
-    animation: scaleIn 0.5s ease-out;
-  }
-  
-  .animate-checkmark {
-    animation: checkmark 0.6s ease-out 0.2s both;
   }
 }
