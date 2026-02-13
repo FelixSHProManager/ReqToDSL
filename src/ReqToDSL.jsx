@@ -128,6 +128,7 @@ export default function ReqToDSL() {
   const [definedFactors, setDefinedFactors] = useState({}); // 记录哪些缺失因子已定义
   const dslStreamingRef = useRef(false);
   const streamIntervalRef = useRef(null);
+  const [dslEditable, setDslEditable] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [uploadedFile, setUploadedFile] = useState({
@@ -289,6 +290,7 @@ export default function ReqToDSL() {
     }
     
     setDisplayedDSL('');
+    setDslEditable(false);
     let currentIndex = 0;
     
     streamIntervalRef.current = setInterval(() => {
@@ -300,6 +302,7 @@ export default function ReqToDSL() {
           clearInterval(streamIntervalRef.current);
           streamIntervalRef.current = null;
         }
+        setDslEditable(true);
       }
     }, 10); // 每10毫秒输出一个字符，可以调整速度
   };
@@ -313,6 +316,7 @@ export default function ReqToDSL() {
       // 离开第三步时重置
       dslStreamingRef.current = false;
       setDisplayedDSL('');
+      setDslEditable(false);
       if (streamIntervalRef.current) {
         clearInterval(streamIntervalRef.current);
         streamIntervalRef.current = null;
@@ -442,53 +446,55 @@ export default function ReqToDSL() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="lg:col-span-2">
-          <label className="block text-sm font-medium text-slate-700 mb-2">因子名称</label>
-          <input
-            type="text"
-            value={requirement.name}
-            onChange={(e) => setRequirement({ ...requirement, name: e.target.value })}
-            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-        </div>
+      {uploadStatus === 'parsed' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
+          <div className="lg:col-span-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">因子名称</label>
+            <input
+              type="text"
+              value={requirement.name}
+              onChange={(e) => setRequirement({ ...requirement, name: e.target.value })}
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            <span className="bg-slate-200 text-slate-600 text-xs px-1.5 py-0.5 rounded mr-2">第一段</span>
-            触发条件 (相关性)
-          </label>
-          <textarea
-            value={requirement.trigger}
-            onChange={(e) => setRequirement({ ...requirement, trigger: e.target.value })}
-            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-28 text-sm"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              <span className="bg-slate-200 text-slate-600 text-xs px-1.5 py-0.5 rounded mr-2">第一段</span>
+              触发条件 (相关性)
+            </label>
+            <textarea
+              value={requirement.trigger}
+              onChange={(e) => setRequirement({ ...requirement, trigger: e.target.value })}
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-28 text-sm"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            <span className="bg-slate-200 text-slate-600 text-xs px-1.5 py-0.5 rounded mr-2">第三段</span>
-            下钻/导出定义
-          </label>
-          <textarea
-            value={requirement.drill}
-            onChange={(e) => setRequirement({ ...requirement, drill: e.target.value })}
-            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-28 text-sm"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              <span className="bg-slate-200 text-slate-600 text-xs px-1.5 py-0.5 rounded mr-2">第三段</span>
+              下钻/导出定义
+            </label>
+            <textarea
+              value={requirement.drill}
+              onChange={(e) => setRequirement({ ...requirement, drill: e.target.value })}
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-28 text-sm"
+            />
+          </div>
 
-        <div className="lg:col-span-2">
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            <span className="bg-slate-200 text-slate-600 text-xs px-1.5 py-0.5 rounded mr-2">第二段</span>
-            计算逻辑 (公式/参数)
-          </label>
-          <textarea
-            value={requirement.logic}
-            onChange={(e) => setRequirement({ ...requirement, logic: e.target.value })}
-            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-36 text-sm font-mono bg-slate-50"
-          />
+          <div className="lg:col-span-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              <span className="bg-slate-200 text-slate-600 text-xs px-1.5 py-0.5 rounded mr-2">第二段</span>
+              计算逻辑 (公式/参数)
+            </label>
+            <textarea
+              value={requirement.logic}
+              onChange={(e) => setRequirement({ ...requirement, logic: e.target.value })}
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none h-36 text-sm font-mono bg-slate-50"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 
@@ -643,13 +649,15 @@ export default function ReqToDSL() {
             <div className="w-3 h-3 rounded-full bg-green-500" />
           </div>
           <span className="ml-4 text-xs text-slate-400 font-mono">DerivativeMarketValue.dsl</span>
+          {dslEditable && <span className="ml-auto text-xs text-green-400 flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span>可编辑</span>}
         </div>
         <textarea
-          readOnly
+          readOnly={!dslEditable}
           value={displayedDSL}
+          onChange={(e) => setDisplayedDSL(e.target.value)}
           className="w-full h-full pt-12 px-6 pb-6 bg-transparent text-slate-300 font-mono text-sm resize-none outline-none leading-relaxed"
         />
-        {displayedDSL.length < GENERATED_DSL.length && (
+        {!dslEditable && (
           <div className="absolute bottom-4 right-4 text-slate-500 text-xs flex items-center gap-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span>正在生成...</span>
@@ -737,7 +745,18 @@ export default function ReqToDSL() {
               <p className="text-xs text-slate-500">Agent-driven DSL Development Workbench</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
+            {/* A/B 方案切换 */}
+            <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
+              <span className="px-3 py-1.5 text-xs font-medium rounded-md bg-white text-blue-600 shadow-sm">
+                方案 A
+              </span>
+              <button onClick={() => navigate('/req-to-dsl-b')}
+                className="px-3 py-1.5 text-xs font-medium rounded-md text-slate-500 hover:text-slate-700 transition-colors">
+                方案 B
+              </button>
+            </div>
+            <div className="w-px h-6 bg-slate-200"></div>
             <button className="px-3 py-1.5 text-slate-600 text-sm hover:bg-slate-100 rounded-lg flex items-center gap-2 transition-colors">
               <Terminal size={16} /> 控制台
             </button>
